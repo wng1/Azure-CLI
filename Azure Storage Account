@@ -1,5 +1,41 @@
 az storage account create 
 --kind StorageV2 
 --resource-group "________________________" 
---location "___________"
+--location uksouth
 --name "_________________"
+
+az appservice plan create \
+--name blob-exercise-plan \
+--resourcegroup "[sandbox-resource-group-name]" \
+--sku FREE
+--location uksouth
+
+az webapp create \
+--name web-app-name \
+--plan blob-exercise-plan \
+--resource-group "[sandbox-resource-group-name]"
+
+CONNECTIONSTRING=$(az storage account show-connecting-string \
+--name storage-name \
+--resource-group "[sandbox-resource-group-name]" \
+--output tsv)
+
+az webapp config appsettings set \
+--name <your-unique-app-name> 
+--resource-group "[sandbox resource group name]" 
+--settings AzureStorageConfig:ConnectionString=$CONNECTIONSTRING AzureStorageConfig:FileContainerName=files
+
+dotnet publish -o pub
+cd pub
+zip -r ../site.zip *
+
+##Publishing it to a specific folder (pub)
+###Zipping the published files into site.zip, which can then be uploaded to a server or cloud environment.
+
+
+az storage blob list 
+--account-name <your-unique-storage-account-name> 
+--container-name files 
+--query [].{Name:name} --output table
+
+##Test the outputs

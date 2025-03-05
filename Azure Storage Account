@@ -1,3 +1,5 @@
+//Azure Configure Storage 
+
 az storage account create 
 --kind StorageV2 
 --resource-group "________________________" 
